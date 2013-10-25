@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestExtensionFixture.cs" />
+    <Compile Include="MockHelpersFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

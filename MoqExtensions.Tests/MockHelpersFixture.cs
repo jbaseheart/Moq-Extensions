@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace MoqExtensions.Tests
 {
     [TestFixture]
-    public class TestExtensionFixture
+    public class MockHelpersFixture
     {
         
 
