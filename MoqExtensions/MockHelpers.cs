@@ -441,6 +441,14 @@ namespace MoqExtensions
     }
 
 
+    public static class MockObject
+    {
+        public static Mock<TEntity> Of<TEntity>()
+        where TEntity : class
+        {
+            return new Mock<TEntity>();
+        }
+    }
 
 
     public static class MockQueryable

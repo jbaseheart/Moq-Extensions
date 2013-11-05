@@ -27,6 +27,46 @@ namespace MoqExtensions.Tests
             Assert.That(repo.Object.Office.First().OfficeName, Is.EqualTo("AdventureWorks"));
         }
 
+        [Test]
+        public void Test_NestedMocks()
+        {
+            var repo = GetFakeRepository()
+                .WhereEntity(r => r.Order)
+                    .ReturnsMockWith(o => o.Office, MockObject.Of<OfficeEntity>()
+                                                    .WithValue(o => o.OfficeId, 4444)
+                                                    .WithValue(o => o.OfficeName, "My Office")
+                                                    .Object);
+
+            var order = repo.Object.Order.First();
+
+            Assert.That(order.Office, Is.Not.Null);
+            Assert.That(order.Office.OfficeId, Is.EqualTo(4444));
+            Assert.That(order.Office.OfficeName, Is.EqualTo("My Office"));
+        }
+
+        [Test]
+        public void Test_NestedQueryableMocks()
+        {
+            var repo = GetFakeRepository()
+                .WhereEntity(r => r.Order)
+                    .ReturnsMockWith(o => o.Offices, MockQueryable.Of<OfficeEntity>()
+                                                        .WithRow(ofc => ofc.OfficeId, 4444, ofc => ofc.OfficeName, "My Office 1")
+                                                        .WithRow(ofc => ofc.OfficeId, 5555, ofc => ofc.OfficeName, "My Office 2")
+                                                        .collection
+                                                        );
+
+            var order = repo.Object.Order.First();
+
+            Assert.That(order.Offices.ToArray()[0], Is.Not.Null);
+            Assert.That(order.Offices.ToArray()[1], Is.Not.Null);
+
+            Assert.That(order.Offices.ToArray()[0].OfficeId, Is.EqualTo(4444));
+            Assert.That(order.Offices.ToArray()[1].OfficeId, Is.EqualTo(5555));
+
+            Assert.That(order.Offices.ToArray()[0].OfficeName, Is.EqualTo("My Office 1"));
+            Assert.That(order.Offices.ToArray()[1].OfficeName, Is.EqualTo("My Office 2"));
+        }
+
 
         [Test]
         public void Test_SetupCollections()
@@ -120,6 +160,8 @@ namespace MoqExtensions.Tests
     {
         public virtual int OrderId { get; set; }
         public virtual int OfficeId { get; set; }
+        public virtual OfficeEntity Office { get; set; }
+        public virtual IEnumerable<OfficeEntity> Offices { get; set; }
     }
 
     public class OfficeEntity
