@@ -129,6 +129,42 @@ namespace MoqExtensions.Tests
         }
 
 
+        [Test]
+        public void Test_Stubs()
+        {
+            var fakeRepo = GetFakeRepository()
+                .WhereEntity(r => r.Order)
+                    .ReturnsStubWith(o => o.OrderId, 1234, o => o.OfficeId, 1111);
+
+
+
+            var order = fakeRepo.Object.Order.FirstOrDefault(o => o.OrderId == 1234);
+            order.OfficeId = 2222;
+
+            Assert.That(fakeRepo.Object.Order.FirstOrDefault(o => o.OrderId == 1234).OfficeId, Is.EqualTo(2222));
+        }
+
+
+        [Test]
+        public void Test_QueryableStubs()
+        {
+            var fakeRepo = GetFakeRepository()
+                .WhereEntity(r => r.Office)
+                    .ReturnsQueryableMockWith(MockQueryable.Of<OfficeEntity>()
+                        .WithRowStub(ofc => ofc.OfficeId, 1, ofc => ofc.OfficeName, "Office 1")
+                        .WithRowStub(ofc => ofc.OfficeId, 2, ofc => ofc.OfficeName, "Office 2")
+                        .WithRowStub(ofc => ofc.OfficeId, 3, ofc => ofc.OfficeName, "Office 3")
+                        .WithRowStub(ofc => ofc.OfficeId, 4, ofc => ofc.OfficeName, "Office 4")
+                        .WithRowStub(ofc => ofc.OfficeId, 5, ofc => ofc.OfficeName, "Office 5")
+                    );
+
+            fakeRepo.Object.Office.Where(ofc => ofc.OfficeId == 2).First().OfficeName = "Modified Office 2";
+            fakeRepo.Object.Office.Where(ofc => ofc.OfficeId == 4).First().OfficeName = "Modified Office 4";
+
+            var evens = fakeRepo.Object.Office.Where(ofc => ofc.OfficeId % 2 == 0).Select(ofc => ofc.OfficeName);
+            Assert.That(evens.ToArray(), Is.EqualTo(new[] { "Modified Office 2", "Modified Office 4" }));
+        }
+
 
         [Test]
         public void Test_GetEnumerableFake()

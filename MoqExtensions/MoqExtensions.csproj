@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extension Methods\ReturnsStubWith.cs" />
+    <Compile Include="Extension Methods\ReturnsQueryableMockWith.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MockHelpers.cs" />
+    <Compile Include="Extension Methods\ReturnsMockWith.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
